@@ -1,0 +1,16 @@
+*.FTp
+*.Fp
+*.Tp
+*.rf
+*.ar
+*.cln
+*.clng
+index.txt
+log.err
+log.out
+nohup.out
+cache/*
+__pycache__
+*.pyc
+
+
