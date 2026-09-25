@@ -35,7 +35,7 @@ def process_one_observation(psr,d,ut):
     fp_ar.tscrunch(10)
     fp_ar.remove_baseline()
     print("Out subints:",len(fp_ar))
-    orig_period=get_period(fp_ar)
+    orig_period=get_period(fp_ar,round=None)
     
     ephfile = set_approx_ephemeris(psr,d,fp_ar)
     if ephfile is not None:
@@ -64,7 +64,7 @@ def process_one_observation(psr,d,ut):
     return outfname
 
 
-def get_period(ar):
+def get_period(ar,round=9):
     f0 = float(ar.get_ephemeris().get_value("F0").replace("D","E"))
     f1 = float(ar.get_ephemeris().get_value("F1").replace("D","E"))
     f2str = ar.get_ephemeris().get_value("F2").replace("D","E")
@@ -77,7 +77,10 @@ def get_period(ar):
     obsepoch = (ar.start_time().in_days() + ar.end_time().in_days())/2.0
     x = (obsepoch - pepoch)*86400.0
     spinfreq_correct = f0+f1*x+f2*x**2
-    return np.round(1.0/spinfreq_correct,9)
+    if round is None:
+        return 1.0/spinfreq_correct
+    else:
+        return np.round(1.0/spinfreq_correct,round)
 
 
 
