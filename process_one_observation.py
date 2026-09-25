@@ -35,6 +35,8 @@ def process_one_observation(psr,d,ut):
     fp_ar.tscrunch(10)
     fp_ar.remove_baseline()
     print("Out subints:",len(fp_ar))
+    orig_period=get_period(fp_ar)
+    
     ephfile = set_approx_ephemeris(psr,d,fp_ar)
     if ephfile is not None:
         print("Using ephemeris file {}".format(ephfile))
@@ -56,6 +58,9 @@ def process_one_observation(psr,d,ut):
 
     outfname=os.path.join(cache,"{}_{}_{}.npz".format(d,ut,psr))
     np.savez(outfname,times=mjds,freqs=freqs,cfreq=cfreq,bw=bw,data=data,approx_period=approx_period,header=header,source_name=src)
+    with open(os.path.join(cache,"{}_{}_{}.txt".format(d,ut,psr)),"w") as f:
+        print(print_header(fp_ar),file=f)
+        print("Original period: {}".format(orig_period),file=f)
     return outfname
 
 
@@ -149,7 +154,7 @@ def set_approx_ephemeris(psr,d,ar):
 
             ar.get_ephemeris().unload(tmpfile)
             with open(tmpfile,"r") as f, open(ephfile,"w") as eph:
-                for line in tmpfile:
+                for line in f:
                     if line.startswith("F0"):
                         eph.write("F0             {:.16e}\n".format(new_f0))
                     elif line.startswith("F1"):
