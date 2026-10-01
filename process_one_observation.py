@@ -17,16 +17,19 @@ def process_one_observation(psr,d,ut):
     dname="{}_{}".format(ut,psr)
     path = os.path.join(root,d,dname)
     print(path)
+    # .cln and .clng are both auto-cleaned; prefer either over the raw .ar
+    data_type="clean"
     fp_fn="{}_{}_{}.cln".format(d,ut,psr)
     inf=os.path.join(path,fp_fn)
-    if not os.path.exists(inf):
-        fp_fn="{}_{}_{}.ar".format(d,ut,psr)
-        inf=os.path.join(path,fp_fn)
     if not os.path.exists(inf):
         fp_fn="{}_{}_{}.clng".format(d,ut,psr)
         inf=os.path.join(path,fp_fn)
     if not os.path.exists(inf):
-        print("Can't find observation")
+        data_type="raw"
+        fp_fn="{}_{}_{}.ar".format(d,ut,psr)
+        inf=os.path.join(path,fp_fn)
+    if not os.path.exists(inf):
+        raise FileNotFoundError("Can't find observation for {} {} {}".format(psr,d,ut))
     print(inf)
     fp_ar = psrchive.Archive.load(inf)
     #fp_ar.dedisperse()
@@ -57,11 +60,11 @@ def process_one_observation(psr,d,ut):
     src=fp_ar.get_source()
 
     outfname=os.path.join(cache,"{}_{}_{}.npz".format(d,ut,psr))
-    np.savez(outfname,times=mjds,freqs=freqs,cfreq=cfreq,bw=bw,data=data,approx_period=approx_period,header=header,source_name=src)
+    np.savez(outfname,times=mjds,freqs=freqs,cfreq=cfreq,bw=bw,data=data,approx_period=approx_period,header=header,source_name=src,data_type=data_type)
     with open(os.path.join(cache,"{}_{}_{}.txt".format(d,ut,psr)),"w") as f:
         print(print_header(fp_ar),file=f)
         print("Original period: {}".format(orig_period),file=f)
-    return outfname
+    return outfname,data_type
 
 
 def get_period(ar,round=9):
@@ -200,4 +203,7 @@ if __name__=="__main__":
     parser.add_argument("--date","-d",required=True)
     parser.add_argument("--utc","-u",required=True)
     args = parser.parse_args()
-    process_one_observation(args.psr,args.date,args.utc)
+    outfname,data_type = process_one_observation(args.psr,args.date,args.utc)
+    # final line parsed by the daemon when run as a subprocess
+    print("RESULT {} {}".format(outfname,data_type))
+

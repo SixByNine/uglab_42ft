@@ -2,6 +2,7 @@
 if (array_key_exists("user",$_GET)) {
     $user=preg_replace( '/[\W]/', '_', $_GET['user']);
 }
+require_once "row_helper.php";
 ?>
 
 <html>
@@ -49,57 +50,9 @@ print "</span></p>
 print " <h2>Data Access</h2>";
 print("<p class='helptext'>The table below shows the data you have submitted and the data that has been processed. The 'URL/Status' column will either contain a link to the processed data or a status message.</p>");
     print ("User ID: '$user' (<a href='index.php'>logout</a>)<br>");
-    print "<table><thead><tr><th>Day</th><th>Time(UT)</th><th>PSR</th><th>URL/Status</th></tr></thead><tbody id='data-rows'>";
+    print "<table><thead><tr><th>Day</th><th>Time(UT)</th><th>PSR</th><th>Type</th><th>URL/Status</th></tr></thead><tbody id='data-rows'>";
 
-$root="http://psrweb.jb.man.ac.uk/lab/42ft";
-
-
-
-$files = scandir("users/$user");
-foreach ($files as $fl) {
-    if (substr($fl,0,1)==".") {
-        continue;
-    }
-
-    if (file_exists("data/$fl.npz")) {
-        $d="$fl.npz";
-        $day=substr($d,0,8);
-        $time=substr($d,9,6);
-        $psr=substr($d,16,strpos($d,".")-16);
-
-        print("<tr class='data'>");
-        print("<td>$day</td>");
-        print("<td>$time</td>");
-        print("<td>$psr</td>");
-        print("<td><a href='data/$d'>$d</a></td>");
-        print("</tr>\n");
-    } else {
-        if (file_exists("jobs/$fl")) {
-            $job=$fl;
-            $f=fopen("jobs/$job","r");
-            $line = fgets($f);
-            $e=explode(" ",$line,4);
-            print("<tr class='submitted'>");
-            print("<td>$e[0]</td>");
-            print("<td>$e[1]</td>");
-            print("<td>$e[2]</td>");
-            print("<td>$e[3]</td>");
-            print("</tr>\n");
-            fclose($f);
-        } else {
-
-            $f=fopen("users/$user/$fl","r");
-            $line = fgets($f);
-            $e=explode(" ",$line,3);
-            print("<tr class='submitted'>");
-            print("<td>$e[0]</td>");
-            print("<td>$e[1]</td>");
-            print("<td>$e[2]</td>");
-            print("<td>Error -- Lost?</td>");
-            print("</tr>\n");
-        }
-    }
-}
+print render_user_rows($user);
 
 print "</tbody></table>";
 }

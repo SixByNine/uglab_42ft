@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 import datetime
 import os
+import pathlib
 import subprocess
+import sys
 import urllib.request
 import urllib.parse
 import signal
 import time
-import process_one_observation
+
+SCRIPT_DIR = pathlib.Path(__file__).parent.resolve()
+CACHE_DIR = os.path.join(SCRIPT_DIR,"cache")
 
 
 def run():
@@ -36,14 +40,61 @@ def check_for_jobs():
             ut=e[1]
             psr=e[2]
             job_id=e[3]
-            fname = process_one_observation.process_one_observation(psr,date,ut)
-            print(fname)
-            rsync_cmd=["rsync",fname,"ugweb:public_html/42ft/data/"]
-            print(" ".join(rsync_cmd))
-            subprocess.call(rsync_cmd)
+            try:
+                process_job(date,ut,psr)
+            except Exception as ex:
+                print("Error processing job {}: {}".format(job_id,ex))
             jid=urllib.parse.quote(job_id)
             print(done_url+"?jid="+jid)
             rr = urllib.request.urlopen(done_url+"?jid="+jid,context=ctx)
+
+
+def process_job(date,ut,psr):
+    uid="{}_{}_{}".format(date,ut,psr)
+    os.makedirs(CACHE_DIR,exist_ok=True)
+    script=os.path.join(SCRIPT_DIR,"process_one_observation.py")
+    result = subprocess.run(
+        [sys.executable,script,"--psr",psr,"--date",date,"--utc",ut],
+        capture_output=True,text=True)
+    print(result.stdout)
+    print(result.stderr,file=sys.stderr)
+
+    if result.returncode != 0:
+        print("Processing failed for {} (returncode {})".format(uid,result.returncode))
+        mark_failed(uid)
+        return
+
+    outfname=None
+    data_type=None
+    for resline in result.stdout.splitlines():
+        if resline.startswith("RESULT "):
+            parts=resline.split()
+            outfname=parts[1]
+            data_type=parts[2]
+    if outfname is None or not os.path.exists(outfname):
+        print("Processing reported success but no output found for {}".format(uid))
+        mark_failed(uid)
+        return
+
+    rsync_cmd=["rsync",outfname,"ugweb:public_html/42ft/data/"]
+    print(" ".join(rsync_cmd))
+    subprocess.call(rsync_cmd)
+
+    type_file=os.path.join(CACHE_DIR,"{}.type".format(uid))
+    with open(type_file,"w") as f:
+        f.write(data_type)
+    rsync_cmd=["rsync",type_file,"ugweb:public_html/42ft/data/{}.type".format(uid)]
+    print(" ".join(rsync_cmd))
+    subprocess.call(rsync_cmd)
+
+
+def mark_failed(uid):
+    failed_file=os.path.join(CACHE_DIR,"{}.failed".format(uid))
+    with open(failed_file,"w") as f:
+        f.write("Processing failed\n")
+    rsync_cmd=["rsync",failed_file,"ugweb:public_html/42ft/data/{}.failed".format(uid)]
+    print(" ".join(rsync_cmd))
+    subprocess.call(rsync_cmd)
             
 
 def check_index():
