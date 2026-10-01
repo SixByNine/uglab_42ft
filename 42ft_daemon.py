@@ -16,7 +16,6 @@ CACHE_DIR = os.path.join(SCRIPT_DIR,"cache")
 def run():
     go=True
     print("START")
-    count=0
     while go:
         check_index()
         check_for_jobs()

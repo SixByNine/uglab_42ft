@@ -17,12 +17,16 @@ def process_one_observation(psr,d,ut):
     dname="{}_{}".format(ut,psr)
     path = os.path.join(root,d,dname)
     print(path)
-    # .cln and .clng are both auto-cleaned; prefer either over the raw .ar
+    # .cln and .clng are both cleaned; prefer either over the raw .ar
     data_type="clean"
     fp_fn="{}_{}_{}.cln".format(d,ut,psr)
     inf=os.path.join(path,fp_fn)
     if not os.path.exists(inf):
         fp_fn="{}_{}_{}.clng".format(d,ut,psr)
+        inf=os.path.join(path,fp_fn)
+    if not os.path.exists(inf):
+        data_type="auto_clean"
+        fp_fn="{}_{}_{}.med".format(d,ut,psr)
         inf=os.path.join(path,fp_fn)
     if not os.path.exists(inf):
         data_type="raw"
@@ -193,7 +197,7 @@ def print_header(ar,data_type):
     ret.append(pprint("Bandwidth (MHz)",ar.get_bandwidth()))
     ret.append(pprint("Integration Time (s)",ar.integration_length()))
     ret.append(pprint("Telescope",ar.get_telescope()))
-    ret.append(pprint("Auto Cleaned",data_type=="clean"))
+    ret.append(pprint("Cleaned",data_type=="clean"))
     return "\n".join(ret)
 
 

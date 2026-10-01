@@ -42,8 +42,10 @@ function render_user_rows($user) {
             if (file_exists("data/$fl.type")) {
                 $type = trim(file_get_contents("data/$fl.type"));
                 if ($type == "clean") {
-                    $type_label = "Auto-cleaned";
+                    $type_label = "Cleaned";
                     $show_reprocess = false;
+                } else if ($type == "auto_clean") {
+                    $type_label = "Auto-cleaned";
                 } else if ($type == "raw") {
                     $type_label = "Raw";
                 }

@@ -42,7 +42,7 @@ print "
 <input type='submit' value='Request data'>
 <p>Last heard from server: <span id='atime'>";
 echo file_get_contents( "jobs/.atime");
-print "</span></p>
+print "</span> (UTC)</p>
 </form>";
 
 
