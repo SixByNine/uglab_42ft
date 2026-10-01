@@ -55,14 +55,14 @@ def process_one_observation(psr,d,ut):
     bw = fp_ar.get_bandwidth()
     freqs = (np.arange(nchan)-nchan/2+0.5)*(bw/nchan)+cfreq
     approx_period=get_period(fp_ar)
-    header=print_header(fp_ar)
+    header=print_header(fp_ar,data_type)
     print(header)
     src=fp_ar.get_source()
 
     outfname=os.path.join(cache,"{}_{}_{}.npz".format(d,ut,psr))
     np.savez(outfname,times=mjds,freqs=freqs,cfreq=cfreq,bw=bw,data=data,approx_period=approx_period,header=header,source_name=src,data_type=data_type)
     with open(os.path.join(cache,"{}_{}_{}.txt".format(d,ut,psr)),"w") as f:
-        print(print_header(fp_ar),file=f)
+        print(print_header(fp_ar,data_type),file=f)
         print("Original period: {}".format(orig_period),file=f)
     return outfname,data_type
 

@@ -21,7 +21,7 @@ def run():
         check_index()
         check_for_jobs()
         try:
-            time.sleep(30)
+            time.sleep(10)
         except KeyboardInterrupt:
             go=False
 
