@@ -179,7 +179,7 @@ def set_approx_ephemeris(psr,d,ar):
 
 
 
-def print_header(ar):
+def print_header(ar,data_type):
     ret=[]
     def pprint(key,val):
         return "{:30s}: {}".format(key,val)
@@ -193,6 +193,7 @@ def print_header(ar):
     ret.append(pprint("Bandwidth (MHz)",ar.get_bandwidth()))
     ret.append(pprint("Integration Time (s)",ar.integration_length()))
     ret.append(pprint("Telescope",ar.get_telescope()))
+    ret.append(pprint("Auto Cleaned",data_type=="clean"))
     return "\n".join(ret)
 
 
