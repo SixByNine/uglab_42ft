@@ -12,5 +12,4 @@ nohup.out
 cache/*
 __pycache__
 *.pyc
-
-
+.DS_store

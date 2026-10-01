@@ -1,0 +1,119 @@
+#requestform label {
+    width: 50px;
+    margin-right:10px;
+    text-align: right;
+    display: inline-block;
+}
+
+body {
+    max-width: 900px;
+    margin: 2.5rem auto;
+    padding: 0 1.25rem;
+    color: #292721;
+    background: #fbfaf6;
+    font-family:   "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+strong {
+    font-weight: 600;
+}
+
+.helptext {
+    font-size: 0.9rem;
+    color: #45433d;
+    margin-top: 0.2rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+h1, h2 {
+    color: #262c30;
+    font-family:  "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+h1 {
+    margin-bottom: 0.35rem;
+    font-size: 2rem;
+}
+
+h2 {
+    margin-top: 2rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #d8d4ca;
+    font-size: 1.35rem;
+}
+
+a {
+    color: #31566a;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    font-weight: 600;
+}
+
+a:hover {
+    color: #193b4d;
+}
+
+input[type="text"] {
+    box-sizing: border-box;
+    min-height: 2rem;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid #aaa69d;
+    border-radius: 2px;
+    background: #fff;
+    color: inherit;
+    font: inherit;
+}
+
+input[type="submit"] {
+    margin-top: 0.55rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid #8c887e;
+    border-radius: 2px;
+    background: #f0eee7;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background: #e6e2d8;
+}
+
+table {
+    width: 100%;
+    margin: 1rem 0 2rem;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 0.55rem 0.65rem;
+    border-bottom: 1px solid #d8d4ca;
+    vertical-align: top;
+}
+
+th {
+    color: #45433d;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    body {
+        margin-top: 1.25rem;
+        padding: 0 0.85rem;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    th, td {
+        padding: 0.4rem;
+        overflow-wrap: anywhere;
+    }
+}
